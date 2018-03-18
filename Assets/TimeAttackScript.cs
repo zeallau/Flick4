@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class TimeAttackScript : MonoBehaviour {
     private GameObject Disc;
-
-
+    public GameObject GoodButton;
+    public GameObject BadButton;
 
     //Click Down pos
     private Vector3 touchStartPos;
@@ -46,18 +47,18 @@ public class TimeAttackScript : MonoBehaviour {
 
     public bool isMove = false;
 
-    private GameObject scoreText;
-    public int score = 0;
+    private GameObject MinusText;
+    public int score = 1000;
 
-    public GameObject DiscText;
-    public int discCount = 10;
+    public GameObject TimeText;
+    private float Timeleft = 60;
 
     // Use this for initialization
     void Start()
     {
         Disc = GameObject.Find("Disc");
-        scoreText = GameObject.Find("ScoreText");
-        DiscText = GameObject.Find("DiscText");
+        MinusText = GameObject.Find("MinusText");
+        TimeText = GameObject.Find("TimeText");
 
         discSpawnPos = new Vector3(Random.Range(-2.6f, 2.6f), -4f, 0.0f);
         Disc.transform.position = discSpawnPos;
@@ -149,34 +150,34 @@ public class TimeAttackScript : MonoBehaviour {
         {
             if (finalDTC <= scoreYellow && scoreUp == true)
             {
-                this.score += 100;
-                this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
+                score -= 100;
+                MinusText.GetComponent<Text>().text = "Score: " + score + "pt";
 
-                Debug.Log("+ 100 Score.");
+                Debug.Log("- 100 Score.");
                 scoreUp = false;
 
 
             }
             else if (finalDTC > scoreYellow && finalDTC <= scoreRed && scoreUp == true)
             {
-                this.score += 50;
-                this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
+                score -= 50;
+                MinusText.GetComponent<Text>().text = "Score: " + score + "pt";
 
-                Debug.Log("Get + 50 Score.");
+                Debug.Log("Get - 50 Score.");
                 scoreUp = false;
 
             }
             else if (finalDTC > scoreRed && finalDTC <= scoreBlue && scoreUp == true)
             {
-                this.score += 20;
-                this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
-                Debug.Log(" + 20 Score.");
+                this.score -= 20;
+                this.MinusText.GetComponent<Text>().text = "Score: " + this.score + "pt";
+                Debug.Log(" - 20 Score.");
                 scoreUp = false;
 
             }
             else if (finalDTC > scoreBlue && finalDTC <= targetRadius && scoreUp == true)
             {
-                Debug.Log("Get + 0 Score. Missing");
+                Debug.Log("Get - 0 Score. Missing");
                 scoreUp = false;
 
             }
@@ -194,9 +195,7 @@ public class TimeAttackScript : MonoBehaviour {
         {
 
             Start();
-
-            this.discCount -= 1;
-            DiscText.GetComponent<Text>().text = "Disc: " + discCount + " / 10";
+            
             scoreUpdate = false;
         }
     }
@@ -204,6 +203,11 @@ public class TimeAttackScript : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        Timeleft -= Time.deltaTime;
+               
+        TimeText.GetComponent<Text>().text = "Time: " + Timeleft.ToString("F2") + "Sec";
+
+        
         FingerFlick();
 
         Respawn();
@@ -214,13 +218,14 @@ public class TimeAttackScript : MonoBehaviour {
     //情景になると、ボタンを現れる方法を教えてくだい。
     void Result()
     {
-        if (discCount == 0 && score >= 600)
+        if (score <= 0)
         {
-            Debug.Log("Good Result");
+            GoodButton.SetActive(true);
         }
-        if (discCount == 0 && score < 600)
+        if (Timeleft <= 0)
         {
-            Debug.Log("Bad Result");
+            TimeText.GetComponent<Text>().text = "Time: - 0.00 Sec";
+            BadButton.SetActive(true);
         }
     }
 

@@ -11,3 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TitleScene.unity
     guid: 8de61c9a2be37124e85bb6a3ee528f86
+  - enabled: 1
+    path: Assets/TimeAttackScene.unity
+    guid: 56328af4840842540b3b5aab15d04d6a

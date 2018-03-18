@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MainControl : MonoBehaviour {
     private GameObject Disc;
 
-
+    public GameObject GoodButton;
+    public GameObject BadButton;
 
     //Click Down pos
     private Vector3 touchStartPos;
@@ -30,6 +32,10 @@ public class MainControl : MonoBehaviour {
     private float lastDTC;
     private float currentDTC;
     private float finalDTC;
+
+    private Vector3 updatedPos;
+    private Vector3 curPos;
+    private Vector3 oldPos;
 
     //Setup target score
     private float discToCenter;
@@ -125,6 +131,9 @@ public class MainControl : MonoBehaviour {
 
     public void OnTriggerStay2D(Collider2D collider)
     {
+        updatedPos = Disc.transform.position;
+        curPos = updatedPos;
+
         //Distance between Disc and center point of target
         discToCenter = Vector3.Distance(Disc.transform.position, targetSpawnPos);
 
@@ -133,16 +142,22 @@ public class MainControl : MonoBehaviour {
         //To compare currentDTC and lastDTC
         currentDTC = discToCenter;
 
-        if (currentDTC == lastDTC && getDTC == true)
+        Debug.Log("currentDTC subposed is" + currentDTC);
+        Debug.Log("lastDTC subposed is" + lastDTC);
+        Debug.Log("curPos subposed is" + curPos.magnitude);
+        Debug.Log("oldPos subposed is" + oldPos.magnitude);
+
+        if (currentDTC == lastDTC && getDTC == true || curPos == oldPos && getDTC == true)
         {
             finalDTC = discToCenter;
-            //Debug.Log("finalDTC                      subposed is" + finalDTC);
-
+            Debug.Log("finalDTC subposed is" + finalDTC);
+           
             getDTC = false;
             scoring = true;
             scoreUp = true;
         }
         lastDTC = currentDTC;
+        oldPos = curPos;
 
         if (scoring == true)
         {
@@ -214,11 +229,11 @@ public class MainControl : MonoBehaviour {
     {
         if(discCount == 0 && score >= 600)
         {
-            Debug.Log("Good Result");
+            GoodButton.SetActive(true);
         }
         if(discCount == 0 && score < 600)
         {
-            Debug.Log("Bad Result");
+            BadButton.SetActive(true);
         }
     }
 
