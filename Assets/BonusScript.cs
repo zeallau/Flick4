@@ -97,30 +97,25 @@ public class BonusScript : MonoBehaviour {
         Debug.Log("is OnTrigger");
         isMove = false;
 
-        DestroyItem();
+        //DestroyItem();
 
         //どうしたら当たったObjectのTagを認識できますか？
-        /*
-        if (gameObject.tag == "Boarder")
+        
+        if (collision.gameObject.tag == "Boarder")
         {
             Start();
         }
 
-        if (gameObject.tag == "Target")
+        if (collision.gameObject.tag == "Target")
         {
-            DestroyItem();
-        }
-        */
-
-    }
-
-    private void DestroyItem()
-    {
-        
-            Destroy(Target);  //これはTargetというTagをつけたら、Destroyしますが、当たったObjectだけDestroyしたいならどうすればいいですか？
+            Destroy(collision.gameObject);  //これはTargetというTagをつけたら、Destroyしますが、当たったObjectだけDestroyしたいならどうすればいいですか？
             Start();
+            
+        }
         
+
     }
+    
 
     // Update is called once per frame
     void Update () {

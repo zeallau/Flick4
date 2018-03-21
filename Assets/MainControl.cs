@@ -203,14 +203,8 @@ public class MainControl : MonoBehaviour {
 
                 }
                 scoreUpdate = true;
-
-
             }
-
         }
-
-
-
     }
 
     
