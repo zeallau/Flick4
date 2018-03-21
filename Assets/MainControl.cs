@@ -49,6 +49,7 @@ public class MainControl : MonoBehaviour {
     bool scoring;
     bool scoreUp;
     bool scoreUpdate;
+    bool isStop;
 
     public bool isMove = false;
 
@@ -76,6 +77,7 @@ public class MainControl : MonoBehaviour {
         scoring = false;
         scoreUp = false;
         scoreUpdate = false;
+        isStop = false;
 
         isMove = false;
     }
@@ -114,6 +116,7 @@ public class MainControl : MonoBehaviour {
                 movedDistance = 0.0f;
 
                 isMove = true;
+                
             }
 
         }
@@ -125,82 +128,92 @@ public class MainControl : MonoBehaviour {
             Disc.transform.Translate(clickDistance * (MOVE_SPEED_PER_SECOND * Time.deltaTime));
             movedDistance += moveDistance;
 
+            isStop = true;
         }
 
     }
 
-    public void OnTriggerStay2D(Collider2D collider)
+
+    void IsStoping()
     {
-        updatedPos = Disc.transform.position;
-        curPos = updatedPos;
-
-        //Distance between Disc and center point of target
-        discToCenter = Vector3.Distance(Disc.transform.position, targetSpawnPos);
-
-        //Debug.Log("discToCenter is" + discToCenter);
-
-        //To compare currentDTC and lastDTC
-        currentDTC = discToCenter;
-
-        Debug.Log("currentDTC subposed is" + currentDTC);
-        Debug.Log("lastDTC subposed is" + lastDTC);
-        Debug.Log("curPos subposed is" + curPos.magnitude);
-        Debug.Log("oldPos subposed is" + oldPos.magnitude);
-
-        if (currentDTC == lastDTC && getDTC == true || curPos == oldPos && getDTC == true)
+        if(isStop == true)
         {
-            finalDTC = discToCenter;
-            Debug.Log("finalDTC subposed is" + finalDTC);
-           
-            getDTC = false;
-            scoring = true;
-            scoreUp = true;
+            updatedPos = Disc.transform.position;
+            curPos = updatedPos;
+
+            //Distance between Disc and center point of target
+            discToCenter = Vector3.Distance(Disc.transform.position, targetSpawnPos);
+
+            //Debug.Log("discToCenter is" + discToCenter);
+
+            //To compare currentDTC and lastDTC
+            currentDTC = discToCenter;
+
+            Debug.Log("currentDTC subposed is" + currentDTC);
+            Debug.Log("lastDTC subposed is" + lastDTC);
+            Debug.Log("curPos subposed is" + curPos.magnitude);
+            Debug.Log("oldPos subposed is" + oldPos.magnitude);
+
+            if (currentDTC == lastDTC && getDTC == true || curPos == oldPos && getDTC == true)
+            {
+                finalDTC = discToCenter;
+                Debug.Log("finalDTC subposed is" + finalDTC);
+
+                getDTC = false;
+                scoring = true;
+                scoreUp = true;
+                isStop = false;
+            }
+            lastDTC = currentDTC;
+            oldPos = curPos;
+
+            if (scoring == true)
+            {
+                if (finalDTC <= scoreYellow && scoreUp == true)
+                {
+                    this.score += 100;
+                    this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
+
+                    Debug.Log("+ 100 Score.");
+                    scoreUp = false;
+
+
+                }
+                else if (finalDTC > scoreYellow && finalDTC <= scoreRed && scoreUp == true)
+                {
+                    this.score += 50;
+                    this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
+
+                    Debug.Log("Get + 50 Score.");
+                    scoreUp = false;
+
+                }
+                else if (finalDTC > scoreRed && finalDTC <= scoreBlue && scoreUp == true)
+                {
+                    this.score += 20;
+                    this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
+                    Debug.Log(" + 20 Score.");
+                    scoreUp = false;
+
+                }
+                else if (finalDTC > scoreBlue && finalDTC <= targetRadius && scoreUp == true)
+                {
+                    Debug.Log("Get + 0 Score. Missing");
+                    scoreUp = false;
+
+                }
+                scoreUpdate = true;
+
+
+            }
+
         }
-        lastDTC = currentDTC;
-        oldPos = curPos;
 
-        if (scoring == true)
-        {
-            if (finalDTC <= scoreYellow && scoreUp == true)
-            {
-                this.score += 100;
-                this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
-
-                Debug.Log("+ 100 Score.");
-                scoreUp = false;
-
-
-            }
-            else if (finalDTC > scoreYellow && finalDTC <= scoreRed && scoreUp == true)
-            {
-                this.score += 50;
-                this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
-
-                Debug.Log("Get + 50 Score.");
-                scoreUp = false;
-
-            }
-            else if (finalDTC > scoreRed && finalDTC <= scoreBlue && scoreUp == true)
-            {
-                this.score += 20;
-                this.scoreText.GetComponent<Text>().text = "Score: " + this.score + "pt";
-                Debug.Log(" + 20 Score.");
-                scoreUp = false;
-
-            }
-            else if (finalDTC > scoreBlue && finalDTC <= targetRadius && scoreUp == true)
-            {
-                Debug.Log("Get + 0 Score. Missing");
-                scoreUp = false;
-
-            }
-            scoreUpdate = true;
-
-            
-        }
 
 
     }
+
+    
 
     void Respawn()
     {
@@ -218,6 +231,8 @@ public class MainControl : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         FingerFlick();
+
+        IsStoping();
 
         Respawn();
 

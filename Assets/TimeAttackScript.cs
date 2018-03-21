@@ -9,6 +9,7 @@ public class TimeAttackScript : MonoBehaviour {
     public GameObject GoodButton;
     public GameObject BadButton;
 
+
     //Click Down pos
     private Vector3 touchStartPos;
     private Vector3 touchStartworldPos;
@@ -44,6 +45,7 @@ public class TimeAttackScript : MonoBehaviour {
     bool scoring;
     bool scoreUp;
     bool scoreUpdate;
+    bool isStop;
 
     public bool isMove = false;
 
@@ -51,7 +53,7 @@ public class TimeAttackScript : MonoBehaviour {
     public int score = 1000;
 
     public GameObject TimeText;
-    private float Timeleft = 60;
+    private float Timeleft = 45;
 
     // Use this for initialization
     void Start()
@@ -72,6 +74,7 @@ public class TimeAttackScript : MonoBehaviour {
         scoring = false;
         scoreUp = false;
         scoreUpdate = false;
+        isStop = false;
 
         isMove = false;
     }
@@ -121,74 +124,83 @@ public class TimeAttackScript : MonoBehaviour {
             Disc.transform.Translate(clickDistance * (MOVE_SPEED_PER_SECOND * Time.deltaTime));
             movedDistance += moveDistance;
 
+            isStop = true;
         }
 
     }
 
-    public void OnTriggerStay2D(Collider2D collider)
+
+    void IsStopping()
     {
-        //Distance between Disc and center point of target
-        discToCenter = Vector3.Distance(Disc.transform.position, targetSpawnPos);
-
-        //Debug.Log("discToCenter is" + discToCenter);
-
-        //To compare currentDTC and lastDTC
-        currentDTC = discToCenter;
-
-        if (currentDTC == lastDTC && getDTC == true)
+        if(isStop == true)
         {
-            finalDTC = discToCenter;
-            //Debug.Log("finalDTC                      subposed is" + finalDTC);
+            
 
-            getDTC = false;
-            scoring = true;
-            scoreUp = true;
-        }
-        lastDTC = currentDTC;
+            //Distance between Disc and center point of target
+            discToCenter = Vector3.Distance(Disc.transform.position, targetSpawnPos);
 
-        if (scoring == true)
-        {
-            if (finalDTC <= scoreYellow && scoreUp == true)
+            //Debug.Log("discToCenter is" + discToCenter);
+
+            //To compare currentDTC and lastDTC
+            currentDTC = discToCenter;
+
+            if (currentDTC == lastDTC && getDTC == true)
             {
-                score -= 100;
-                MinusText.GetComponent<Text>().text = "Score: " + score + "pt";
+                finalDTC = discToCenter;
+                //Debug.Log("finalDTC                      subposed is" + finalDTC);
 
-                Debug.Log("- 100 Score.");
-                scoreUp = false;
+                getDTC = false;
+                scoring = true;
+                scoreUp = true;
+                isStop = false;
+            }
+            lastDTC = currentDTC;
+
+            if (scoring == true)
+            {
+                if (finalDTC <= scoreYellow && scoreUp == true)
+                {
+                    score -= 100;
+                    MinusText.GetComponent<Text>().text = "Score: " + score + "pt";
+
+                    Debug.Log("- 100 Score.");
+                    scoreUp = false;
+
+
+                }
+                else if (finalDTC > scoreYellow && finalDTC <= scoreRed && scoreUp == true)
+                {
+                    score -= 50;
+                    MinusText.GetComponent<Text>().text = "Score: " + score + "pt";
+
+                    Debug.Log("Get - 50 Score.");
+                    scoreUp = false;
+
+                }
+                else if (finalDTC > scoreRed && finalDTC <= scoreBlue && scoreUp == true)
+                {
+                    this.score -= 20;
+                    this.MinusText.GetComponent<Text>().text = "Score: " + this.score + "pt";
+                    Debug.Log(" - 20 Score.");
+                    scoreUp = false;
+
+                }
+                else if (finalDTC > scoreBlue && finalDTC <= targetRadius && scoreUp == true)
+                {
+                    Debug.Log("Get - 0 Score. Missing");
+                    scoreUp = false;
+
+                }
+                scoreUpdate = true;
 
 
             }
-            else if (finalDTC > scoreYellow && finalDTC <= scoreRed && scoreUp == true)
-            {
-                score -= 50;
-                MinusText.GetComponent<Text>().text = "Score: " + score + "pt";
-
-                Debug.Log("Get - 50 Score.");
-                scoreUp = false;
-
-            }
-            else if (finalDTC > scoreRed && finalDTC <= scoreBlue && scoreUp == true)
-            {
-                this.score -= 20;
-                this.MinusText.GetComponent<Text>().text = "Score: " + this.score + "pt";
-                Debug.Log(" - 20 Score.");
-                scoreUp = false;
-
-            }
-            else if (finalDTC > scoreBlue && finalDTC <= targetRadius && scoreUp == true)
-            {
-                Debug.Log("Get - 0 Score. Missing");
-                scoreUp = false;
-
-            }
-            scoreUpdate = true;
-
-
         }
 
 
     }
 
+    
     void Respawn()
     {
         if (scoreUpdate)
@@ -210,7 +222,10 @@ public class TimeAttackScript : MonoBehaviour {
         
         FingerFlick();
 
+        IsStopping();
+
         Respawn();
+
 
         Result();
     }
