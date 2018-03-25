@@ -8,7 +8,8 @@ public class TimeAttackScript : MonoBehaviour {
     private GameObject Disc;
     public GameObject GoodButton;
     public GameObject BadButton;
-
+    private float sizeRatio;
+    private Vector3 scaleRatio;
 
     //Click Down pos
     private Vector3 touchStartPos;
@@ -62,6 +63,10 @@ public class TimeAttackScript : MonoBehaviour {
         MinusText = GameObject.Find("MinusText");
         TimeText = GameObject.Find("TimeText");
 
+        sizeRatio = Random.Range(0.5f, 1.0f);
+        scaleRatio = new Vector3(sizeRatio, sizeRatio, 1.0f);
+        this.gameObject.transform.localScale = scaleRatio;
+
         discSpawnPos = new Vector3(Random.Range(-2.6f, 2.6f), -4f, 0.0f);
         Disc.transform.position = discSpawnPos;
 
@@ -83,9 +88,9 @@ public class TimeAttackScript : MonoBehaviour {
 
     void FingerFlick()
     {
-        scoreYellow = targetRadius * 0.162f;
-        scoreRed = targetRadius * 0.5f;
-        scoreBlue = targetRadius * 0.83f;
+        scoreYellow = targetRadius * 0.162f * sizeRatio;
+        scoreRed = targetRadius * 0.5f * sizeRatio;
+        scoreBlue = targetRadius * 0.83f * sizeRatio;
 
         if (Input.touchCount > 0)
         {

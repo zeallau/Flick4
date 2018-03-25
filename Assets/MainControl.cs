@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class MainControl : MonoBehaviour {
     private GameObject Disc;
 
+    private float sizeRatio;
+
     public GameObject GoodButton;
     public GameObject BadButton;
 
@@ -44,6 +46,8 @@ public class MainControl : MonoBehaviour {
     private float scoreRed;
     private float scoreBlue;
 
+    private Vector3 scaleRatio;
+
     //To force script run step by step
     bool getDTC;
     bool scoring;
@@ -65,8 +69,15 @@ public class MainControl : MonoBehaviour {
         scoreText = GameObject.Find("ScoreText");
         DiscText = GameObject.Find("DiscText");
 
+
+        
+
         discSpawnPos = new Vector3(Random.Range(-2.6f, 2.6f), -4f, 0.0f);
         Disc.transform.position = discSpawnPos;
+
+        sizeRatio = Random.Range(0.5f, 1.0f);
+        scaleRatio = new Vector3(sizeRatio, sizeRatio, 1.0f);
+        this.gameObject.transform.localScale = scaleRatio;
 
         targetSpawnPos = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(0.0f, 2.0f), 0.0f);
         this.gameObject.transform.position = targetSpawnPos;
@@ -86,9 +97,9 @@ public class MainControl : MonoBehaviour {
 
     void FingerFlick()
     {
-        scoreYellow = targetRadius * 0.162f;
-        scoreRed = targetRadius * 0.5f;
-        scoreBlue = targetRadius * 0.83f;
+        scoreYellow = targetRadius * 0.162f * sizeRatio;
+        scoreRed = targetRadius * 0.5f * sizeRatio;
+        scoreBlue = targetRadius * 0.83f * sizeRatio;
 
         if (Input.touchCount > 0)
         {
